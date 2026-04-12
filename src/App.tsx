@@ -1,63 +1,43 @@
-import { useState, useRef, useCallback } from 'react'
-import { randomNote, pitchClass, startListening, type AudioData } from './audio'
+import { useState, useCallback } from 'react'
+import { startListening, type AudioData } from './lib/audio'
+import NoteExercise from './exercises/NoteExercise'
+import StringExercise from './exercises/StringExercise'
+
+enum Status { Idle, Loading, Listening }
+
+const EXERCISES = { note: NoteExercise, string: StringExercise } as const
+type ExerciseKey = keyof typeof EXERCISES
 
 export default function App() {
-  const [target, setTarget] = useState(() => randomNote(null))
-  const [detected, setDetected] = useState<string | null>(null)
-  const [freq, setFreq] = useState<number | null>(null)
-  const [db, setDb] = useState<number>(-Infinity)
-  const [listening, setListening] = useState(false)
-  const [correct, setCorrect] = useState(false)
-  const targetRef = useRef(target)
-  const matchStart = useRef<number | null>(null)
-  const advancing = useRef(false)
+  const [status, setStatus] = useState(Status.Idle)
+  const [audio, setAudio] = useState<AudioData>({ note: null, freq: null, db: -Infinity })
+  const [exercise, setExercise] = useState<ExerciseKey>('note')
 
-  const start = useCallback(() => {
-    startListening(({ note, freq: f, db: d }: AudioData) => {
-      setDetected(note)
-      setFreq(f)
-      setDb(d)
-
-      if (!note || advancing.current) {
-        if (!note) matchStart.current = null
-        return
-      }
-
-      if (pitchClass(note) === targetRef.current) {
-        if (!matchStart.current) matchStart.current = performance.now()
-        if (performance.now() - matchStart.current > 200) {
-          advancing.current = true
-          matchStart.current = null
-          setCorrect(true)
-          setTimeout(() => {
-
-            const next = randomNote(targetRef.current)
-            targetRef.current = next
-            setTarget(next)
-            setDetected(null)
-            setCorrect(false)
-            advancing.current = false
-          }, 400)
-        }
-      } else {
-        matchStart.current = null
-      }
-    })
-    setListening(true)
+  const start = useCallback(async () => {
+    setStatus(Status.Loading)
+    await startListening(setAudio)
+    setStatus(Status.Listening)
   }, [])
 
-  if (!listening) {
-    return <button id="start" onClick={start}>START</button>
+  if (status !== Status.Listening) {
+    return (
+      <button id="start" onClick={start} disabled={status === Status.Loading}>
+        {status === Status.Loading ? <div className="spinner" /> : 'START'}
+      </button>
+    )
   }
+
+  const Exercise = EXERCISES[exercise]
 
   return (
     <div>
-      <div id="note" className={correct ? 'correct' : ''}>{target}</div>
-      <div id="detected" className={detected && pitchClass(detected) === target ? 'match' : ''}>
-        {detected ?? '—'}
-      </div>
-      <div id="debug">
-        {freq ? `${Math.round(freq)} Hz` : '— Hz'} | {Math.round(db)} dB
+      <Exercise audio={audio} />
+      <div className="input-group">
+        <label id="exercise-label">Exercise Mode</label>
+        <select id="exercise-select" value={exercise} onChange={e => setExercise(e.target.value as ExerciseKey)}>
+          <option value="note">Note</option>
+          <option value="string">String</option>
+        </select>
       </div>
     </div>
   )

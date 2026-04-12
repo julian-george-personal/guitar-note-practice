@@ -4,7 +4,7 @@ export const AUDIO_CONFIG = {
     // dB level where compression kicks in. Lower = more compression on quiet signals.
     threshold: -64,
     // dB range above threshold for soft-knee transition. Higher = gentler onset.
-    knee: 40,
+    knee: 44,
     // Amount of compression. 12:1 means 12dB of input above threshold = 1dB of output.
     ratio: 12,
     // Seconds to start compressing after signal exceeds threshold. 0 = instant.
@@ -16,7 +16,7 @@ export const AUDIO_CONFIG = {
   // -- Gain (applied after compressor to boost overall level) --
   // Multiplier on the signal. Higher = louder input to the detector.
   // Needed because laptop mics pick up guitar quietly.
-  gain: 24,
+  gain: 20,
 
   // -- Analyser --
   // Number of samples per analysis frame. Bigger = better frequency resolution
@@ -28,7 +28,7 @@ export const AUDIO_CONFIG = {
     // Aperiodicity tolerance. Lower = stricter pitch detection. Default 0.1.
     threshold: 0.3,
     // Minimum confidence to accept a pitch. Lower = more permissive. Default 0.1.
-    probabilityThreshold: 0.03,
+    probabilityThreshold: 0.02,
   },
 
   // -- Detection frequency range (Hz) --

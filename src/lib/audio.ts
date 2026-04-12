@@ -4,8 +4,16 @@ import { AUDIO_CONFIG } from './audio-config'
 
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 
+// Normalize any note to use sharps (Gb -> F#, Bb4 -> A#4). Naturals pass through.
+export function toSharp(note: string): string {
+  if (note.length >= 2 && note[1] === 'b') {
+    return Note.enharmonic(note) || note
+  }
+  return note
+}
+
 export function frequencyToNote(freq: number): string {
-  return Note.enharmonic(Note.fromFreq(freq))
+  return toSharp(Note.fromFreq(freq))
 }
 
 export function pitchClass(note: string): string {
