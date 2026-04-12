@@ -39,6 +39,7 @@ export default function App() {
           <option value="string">String</option>
         </select>
       </div>
+      <div id="config-portal" />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { YIN } from 'pitchfinder'
-import { Note } from 'tonal'
+import { Note, Scale } from 'tonal'
 import { AUDIO_CONFIG } from './audio-config'
 
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
@@ -20,9 +20,11 @@ export function pitchClass(note: string): string {
   return Note.pitchClass(note)
 }
 
-export function randomNote(current: string | null): string {
+export function randomNote(current: string | null, scale: string | null = null): string {
+  const scaleNotes = scale ? Scale.get(scale).notes.map(toSharp) : null
+  const pool = scaleNotes && scaleNotes.length > 0 ? NOTES.filter(n => scaleNotes.includes(n)) : NOTES
   let note: string
-  do { note = NOTES[Math.floor(Math.random() * NOTES.length)] } while (note === current)
+  do { note = pool[Math.floor(Math.random() * pool.length)] } while (pool.length > 1 && note === current)
   return note
 }
 

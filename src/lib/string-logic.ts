@@ -1,8 +1,17 @@
-import { Note, Range } from 'tonal'
+import { Note, Range, Scale } from 'tonal'
 import { toSharp } from './audio'
 
 const STANDARD_OCTAVES = [2, 2, 3, 3, 3, 4]
-const FRETS = 11
+
+export const DEFAULT_FRET_RANGE = '0-11'
+
+export function parseFretRange(input: string): [number, number] | null {
+  const match = input.match(/^(\d+)-(\d+)$/)
+  if (!match) return null
+  const min = parseInt(match[1]), max = parseInt(match[2])
+  if (min >= max || min < 0 || max > 11 || max < 0) return null
+  return [min, max]
+}
 
 export const DEFAULT_TUNING = 'EADGBE'
 
@@ -34,22 +43,28 @@ export function parseTuning(input: string): string[] {
   return notes
 }
 
-function notesOnString(openNote: string, openOctave: number): string[] {
-  const from = openNote + openOctave
-  const toMidi = Note.midi(from)! + FRETS
-  const to = Note.fromMidiSharps(toMidi)
+function notesOnString(openNote: string, openOctave: number, fretMin: number, fretMax: number): string[] {
+  const openMidi = Note.midi(openNote + openOctave)!
+  const from = Note.fromMidiSharps(openMidi + fretMin)
+  const to = Note.fromMidiSharps(openMidi + fretMax)
   return Range.chromatic([from, to], { sharps: true })
 }
 
-export function randomStringNote(tuning: string[], current: StringTarget | null): StringTarget {
+export function randomStringNote(tuning: string[], current: StringTarget | null, scale: string | null = null, fretRange: [number, number] = [0, 11], enabledStrings: number[] | null = null): StringTarget {
+  const strings = enabledStrings && enabledStrings.length > 0 ? enabledStrings : Array.from({ length: tuning.length }, (_, i) => i + 1)
   let str: number
   let note: string
+  let attempts = 0
+  const [fretMin, fretMax] = fretRange
   do {
-    str = Math.floor(Math.random() * tuning.length) + 1
+    str = strings[Math.floor(Math.random() * strings.length)]
     const stringIdx = tuning.length - str
-    const notes = notesOnString(tuning[stringIdx], STANDARD_OCTAVES[stringIdx] ?? 3)
-    note = notes[Math.floor(Math.random() * notes.length)]
-  } while (current && str === current.string && note === current.note)
+    const allNotes = notesOnString(tuning[stringIdx], STANDARD_OCTAVES[stringIdx] ?? 3, fretMin, fretMax)
+    const filtered = filterByScale(allNotes, scale)
+    const pool = filtered.length > 0 ? filtered : allNotes
+    note = pool[Math.floor(Math.random() * pool.length)]
+    attempts++
+  } while (attempts < 50 && current && str === current.string && note === current.note)
   return { string: str, note }
 }
 
@@ -61,6 +76,17 @@ export function octaveMatch(detected: string, target: string): boolean {
   const tOct = Note.octave(t)
   if (dOct == null || tOct == null) return false
   return Math.abs(dOct - tOct) <= 1
+}
+
+export function validateScale(input: string): boolean {
+  if (input === '') return true
+  return !Scale.get(input).empty
+}
+
+function filterByScale(notes: string[], scale: string | null): string[] {
+  if (!scale) return notes
+  const scaleNotes = Scale.get(scale).notes.map(toSharp)
+  return notes.filter(n => scaleNotes.includes(Note.pitchClass(n)))
 }
 
 export function openNoteForString(tuning: string[], str: number): string {
