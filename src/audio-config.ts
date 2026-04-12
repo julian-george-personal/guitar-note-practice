@@ -1,0 +1,39 @@
+export const AUDIO_CONFIG = {
+  // -- Compressor (applied first to tame peaks) --
+  compressor: {
+    // dB level where compression kicks in. Lower = more compression on quiet signals.
+    threshold: -64,
+    // dB range above threshold for soft-knee transition. Higher = gentler onset.
+    knee: 40,
+    // Amount of compression. 12:1 means 12dB of input above threshold = 1dB of output.
+    ratio: 12,
+    // Seconds to start compressing after signal exceeds threshold. 0 = instant.
+    attack: 0,
+    // Seconds to stop compressing after signal drops below threshold.
+    release: 0.5,
+  },
+
+  // -- Gain (applied after compressor to boost overall level) --
+  // Multiplier on the signal. Higher = louder input to the detector.
+  // Needed because laptop mics pick up guitar quietly.
+  gain: 24,
+
+  // -- Analyser --
+  // Number of samples per analysis frame. Bigger = better frequency resolution
+  // but more latency. 8192 at 44.1kHz ≈ 186ms window. Needed for low guitar notes.
+  fftSize: 8192,
+
+  // -- YIN pitch detector --
+  yin: {
+    // Aperiodicity tolerance. Lower = stricter pitch detection. Default 0.1.
+    threshold: 0.3,
+    // Minimum confidence to accept a pitch. Lower = more permissive. Default 0.1.
+    probabilityThreshold: 0.03,
+  },
+
+  // -- Detection frequency range (Hz) --
+  // Filters out results outside the guitar range.
+  // 50 Hz covers drop tunings, 1400 Hz ≈ 24th fret high E.
+  minFreq: 50,
+  maxFreq: 1400,
+}

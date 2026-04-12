@@ -22,4 +22,42 @@ body {
   font-weight: 700;
   line-height: 1;
   user-select: none;
+  transition: color 0.2s, transform 0.2s;
+}
+
+#note.correct {
+  color: #4ade80;
+  transform: scale(1.1);
+}
+
+#detected {
+  font-size: 2.5rem;
+  margin-top: 1.5rem;
+  opacity: 0.5;
+  transition: color 0.15s, opacity 0.15s;
+}
+
+#detected.match {
+  color: #4ade80;
+  opacity: 1;
+}
+
+#debug {
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  opacity: 0.3;
+  font-variant-numeric: tabular-nums;
+}
+
+#start {
+  letter-spacing: 0.2rem;
+  width: 100vw;
+  height: 100dvh;
+  position: fixed;
+  inset: 0;
+  font-size: 2rem;
+  border: none;
+  background: transparent;
+  color: #eee;
+  cursor: pointer;
 }
