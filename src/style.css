@@ -56,6 +56,7 @@ body {
 }
 
 .config {
+  margin-top: 0.5rem;
   margin-bottom: 0.5rem;
   text-align: center;
 }
@@ -98,7 +99,7 @@ body {
   background: transparent;
   border: none;
   color: inherit;
-  font-size: inherit;
+  font-size: 1rem;
   font-family: inherit;
   text-align: center;
   outline: none;
@@ -151,8 +152,8 @@ body {
   margin-top: 0.2rem;
 }
 
-#fret-label, #scale-label, #strings-label {
-  font-size: 0.65rem;
+#fret-label, #scale-label, #strings-label, #exercise-label {
+  font-size: 0.85rem;
   opacity: 0.4;
   margin-bottom: 0.1rem;
   letter-spacing: -0.03em;
@@ -160,7 +161,7 @@ body {
 
 #fret-input, #scale-input {
   padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   background: transparent;
   color: #eee;
   border: 1px solid #444;
@@ -169,17 +170,10 @@ body {
   width: 8rem;
 }
 
-#exercise-label {
-  font-size: 0.65rem;
-  opacity: 0.4;
-  margin-bottom: 0.1rem;
-  letter-spacing: -0.03em;
-}
-
 #exercise-select {
   margin-top: 0;
   padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   background: transparent;
   color: #eee;
   border: 1px solid #444;
