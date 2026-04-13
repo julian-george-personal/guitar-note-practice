@@ -1,4 +1,5 @@
 import { useState, useLayoutEffect } from 'react'
+import './ConfigSection.css'
 import { createPortal } from 'react-dom'
 
 const Chevron = () => (

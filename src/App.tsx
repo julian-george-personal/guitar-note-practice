@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import './App.css'
 import { startListening, type AudioData } from './lib/audio'
 import NoteExercise from './exercises/NoteExercise'
 import StringExercise from './exercises/StringExercise'

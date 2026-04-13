@@ -1,3 +1,4 @@
+import './VolumeBar.css'
 import { AUDIO_CONFIG } from '../lib/audio-config'
 
 const MIN_DB = AUDIO_CONFIG.compressor.threshold

@@ -1,0 +1,17 @@
+#volume-bar {
+  width: 4px;
+  height: 2.5rem;
+  border: 1px solid #444;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  opacity: 0.5;
+}
+
+#volume-fill {
+  width: 100%;
+  background: #eee;
+  transition: height 0.05s;
+}

@@ -1,3 +1,4 @@
+import './ScaleInput.css'
 import { useValidatedInput } from '../hooks/useValidatedInput'
 import { validateScale } from '../lib/string-logic'
 import { storage } from '../storage'

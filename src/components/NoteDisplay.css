@@ -1,0 +1,12 @@
+#note {
+  font-size: 8rem;
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+  transition: color 0.2s, transform 0.2s;
+}
+
+#note.correct {
+  color: #4ade80;
+  transform: scale(1.1);
+}

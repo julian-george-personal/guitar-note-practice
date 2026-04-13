@@ -1,0 +1,76 @@
+#string-label {
+  font-size: 1.2rem;
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+
+#strings-label,
+#fret-label {
+  font-size: 0.85rem;
+  opacity: 0.4;
+  margin-bottom: 0.1rem;
+  letter-spacing: -0.03em;
+}
+
+.string-chips {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.string-chip {
+  min-width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 1.4rem;
+  border: 1px solid #444;
+  background: transparent;
+  color: #eee;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0.25;
+  transition: opacity 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  padding: 0 0.7rem;
+}
+
+.string-chip.active {
+  opacity: 1;
+  border-color: #aaa;
+}
+
+.string-chip-label {
+  cursor: text;
+}
+
+.string-chip-input {
+  width: 2rem;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1rem;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  padding: 0;
+}
+
+#fret-min-input,
+#fret-max-input {
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  background: transparent;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 4px;
+  text-align: center;
+  width: 3.5rem;
+}
+
+.fret-range {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}

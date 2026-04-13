@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
+import './StringExercise.css'
 import { useValidatedInput } from '../hooks/useValidatedInput'
 import { Note } from 'tonal'
 import { pitchClass, toSharp, type AudioData } from '../lib/audio'

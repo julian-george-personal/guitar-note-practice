@@ -1,0 +1,23 @@
+.detected-row {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+}
+
+#detected {
+  font-size: 2.5rem;
+  width: 5rem;
+  text-align: center;
+  opacity: 0.5;
+  transition: color 0.15s, opacity 0.15s;
+}
+
+#detected.match {
+  color: #4ade80;
+  opacity: 1;
+}
+
+.volume-bar-spacer {
+  width: 4px;
+}

@@ -1,0 +1,37 @@
+.config {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.config-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.config summary {
+  font-size: 0.85rem;
+  opacity: 0.4;
+  letter-spacing: -0.03em;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 0.75rem;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.config summary svg {
+  transition: transform 0.15s;
+}
+
+.config[open] summary svg {
+  transform: rotate(180deg);
+}
+
+.config .input-group {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
