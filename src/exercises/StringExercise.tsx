@@ -41,7 +41,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     (v) => parseFretRange(v) !== null,
     { persist: storage.fretRange.set, revertOnInvalid: true }
   )
-  const fretRange = parseFretRange(fretRangeInput.committed) ?? [0, 11]
+  const fretRange = useMemo(() => parseFretRange(fretRangeInput.committed) ?? [0, 11], [fretRangeInput.committed])
   const [minStr, maxStr] = fretRangeInput.value.split('-')
 
   const allStrings = useMemo(() => Array.from({ length: tuningNotes.length }, (_, i) => i + 1), [tuningNotes.length])
@@ -60,7 +60,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
 
   useEffect(() => {
     setEnabledStrings(allStrings)
-  }, [tuningNotes.length])
+  }, [allStrings])
 
   const [target, setTarget] = useState(() => randomStringNote(tuningNotes, null, scale, fretRange, enabledStrings))
 
@@ -70,7 +70,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
 
   useEffect(() => {
     setTarget(randomStringNote(tuningNotes, null, scale, fretRange, enabledStrings))
-  }, [fretRangeInput.committed, scale, enabledStrings, tuningNotes])
+  }, [fretRange, scale, enabledStrings, tuningNotes])
 
   const { correct, isMatch } = useNoteMatch(target.note, audio.note, advance, octaveMatch)
 
