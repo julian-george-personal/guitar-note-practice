@@ -1,4 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useValidatedInput } from '../hooks/useValidatedInput'
 import { Note } from 'tonal'
 import { pitchClass, toSharp, type AudioData } from '../lib/audio'
 import { useNoteMatch } from '../hooks/useNoteMatch'
@@ -8,15 +9,14 @@ import DebugInfo from '../components/DebugInfo'
 import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, octaveMatch, openNoteForString } from '../lib/string-logic'
 import ScaleInput from '../components/ScaleInput'
 import ConfigSection from '../components/ConfigSection'
+import { storage } from '../storage'
 
 export default function StringExercise({ audio }: { audio: AudioData }) {
-  const [scale, setScale] = useState<string | null>(() => localStorage.getItem('scale') || null)
+  const [scale, setScale] = useState<string | null>(() => storage.scale.get() || null)
 
   const [tuningNotes, setTuningNotes] = useState<string[]>(() =>
-    parseTuning(localStorage.getItem('tuning') || DEFAULT_TUNING)
+    parseTuning(storage.tuning.get() || DEFAULT_TUNING)
   )
-  const tuning = tuningNotes
-
   const [editState, setEditState] = useState<{ index: number; draft: string } | null>(null)
 
   const commitChipEdit = useCallback((index: number) => {
@@ -28,7 +28,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
         setTuningNotes(notes => {
           const next = [...notes]
           next[index] = note
-          localStorage.setItem('tuning', next.join(''))
+          storage.tuning.set(next.join(''))
           return next
         })
       }
@@ -36,22 +36,24 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     })
   }, [])
 
-  const [fretInput, setFretInput] = useState(() => localStorage.getItem('fretRange') || DEFAULT_FRET_RANGE)
-  const [fretCommitted, setFretCommitted] = useState(fretInput)
-  const fretRange = parseFretRange(fretCommitted) ?? [0, 11]
-  const isFretValid = parseFretRange(fretInput) !== null
+  const fretRangeInput = useValidatedInput(
+    storage.fretRange.get() || DEFAULT_FRET_RANGE,
+    (v) => parseFretRange(v) !== null,
+    { persist: storage.fretRange.set, revertOnInvalid: true }
+  )
+  const fretRange = parseFretRange(fretRangeInput.committed) ?? [0, 11]
+  const [minStr, maxStr] = fretRangeInput.value.split('-')
 
   const allStrings = useMemo(() => Array.from({ length: tuningNotes.length }, (_, i) => i + 1), [tuningNotes.length])
-  const [enabledStrings, setEnabledStrings] = useState<number[]>(() => {
-    const saved = localStorage.getItem('enabledStrings')
-    return saved ? JSON.parse(saved) : allStrings
-  })
+  const [enabledStrings, setEnabledStrings] = useState<number[]>(() =>
+    storage.enabledStrings.get() ?? allStrings
+  )
 
   const toggleString = useCallback((str: number) => {
     setEnabledStrings(prev => {
       const next = prev.includes(str) ? prev.filter(s => s !== str) : [...prev, str]
       if (next.length === 0) return prev
-      localStorage.setItem('enabledStrings', JSON.stringify(next))
+      storage.enabledStrings.set(next)
       return next
     })
   }, [])
@@ -60,15 +62,15 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     setEnabledStrings(allStrings)
   }, [tuningNotes.length])
 
-  const [target, setTarget] = useState(() => randomStringNote(tuning, null, scale, fretRange, enabledStrings))
+  const [target, setTarget] = useState(() => randomStringNote(tuningNotes, null, scale, fretRange, enabledStrings))
 
   const advance = useCallback(() => {
-    setTarget(t => randomStringNote(tuning, t, scale, fretRange, enabledStrings))
-  }, [tuning, scale, fretRange, enabledStrings])
+    setTarget(t => randomStringNote(tuningNotes, t, scale, fretRange, enabledStrings))
+  }, [tuningNotes, scale, fretRange, enabledStrings])
 
   useEffect(() => {
-    setTarget(randomStringNote(tuning, null, scale, fretRange, enabledStrings))
-  }, [fretCommitted, scale, enabledStrings, tuningNotes])
+    setTarget(randomStringNote(tuningNotes, null, scale, fretRange, enabledStrings))
+  }, [fretRangeInput.committed, scale, enabledStrings, tuningNotes])
 
   const { correct, isMatch } = useNoteMatch(target.note, audio.note, advance, octaveMatch)
 
@@ -120,22 +122,21 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
         <ScaleInput onCommit={setScale} />
         <div className="input-group">
           <label id="fret-label">Fret Range</label>
-          <input
-            id="fret-input"
-            type="text"
-            value={fretInput}
-            onChange={e => setFretInput(e.target.value)}
-            onBlur={() => {
-              if (isFretValid) {
-                setFretCommitted(fretInput)
-                localStorage.setItem('fretRange', fretInput)
-              }
-            }}
-          />
-          {!isFretValid && <span className="input-error">Use format 0-11</span>}
+          <div className="fret-range">
+            <input id="fret-min-input" type="text" value={minStr ?? ''}
+              onChange={e => fretRangeInput.set(`${e.target.value}-${maxStr ?? ''}`)}
+              onBlur={fretRangeInput.onBlur}
+            />
+            <span>-</span>
+            <input id="fret-max-input" type="text" value={maxStr ?? ''}
+              onChange={e => fretRangeInput.set(`${minStr ?? ''}-${e.target.value}`)}
+              onBlur={fretRangeInput.onBlur}
+            />
+          </div>
+          {!fretRangeInput.isValid && <span className="input-error">Invalid range</span>}
         </div>
       </ConfigSection>
-      <div id="string-label">String {target.string} ({openNoteForString(tuning, target.string)})</div>
+      <div id="string-label">String {target.string} ({openNoteForString(tuningNotes, target.string)})</div>
       <NoteDisplay note={pitchClass(target.note)} correct={correct} />
       <DetectedNote detected={audio.note} isMatch={isMatch} />
       <DebugInfo freq={audio.freq} db={audio.db} />

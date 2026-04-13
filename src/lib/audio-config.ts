@@ -28,7 +28,7 @@ export const AUDIO_CONFIG = {
     // Aperiodicity tolerance. Lower = stricter pitch detection. Default 0.1.
     threshold: 0.3,
     // Minimum confidence to accept a pitch. Lower = more permissive. Default 0.1.
-    probabilityThreshold: 0.02,
+    probabilityThreshold: 0.05,
   },
 
   // -- Detection frequency range (Hz) --

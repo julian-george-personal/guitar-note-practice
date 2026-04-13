@@ -6,9 +6,10 @@ import DetectedNote from '../components/DetectedNote'
 import DebugInfo from '../components/DebugInfo'
 import ScaleInput from '../components/ScaleInput'
 import ConfigSection from '../components/ConfigSection'
+import { storage } from '../storage'
 
 export default function NoteExercise({ audio }: { audio: AudioData }) {
-  const [scale, setScale] = useState<string | null>(() => localStorage.getItem('scale') || null)
+  const [scale, setScale] = useState<string | null>(() => storage.scale.get() || null)
   const [target, setTarget] = useState(() => randomNote(null, scale))
 
   const advance = useCallback(() => {
