@@ -30,9 +30,17 @@ body {
   transform: scale(1.1);
 }
 
+.detected-row {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin-top: 1.5rem;
+}
+
 #detected {
   font-size: 2.5rem;
-  margin-top: 1.5rem;
+  width: 5rem;
+  text-align: center;
   opacity: 0.5;
   transition: color 0.15s, opacity 0.15s;
 }
@@ -42,11 +50,26 @@ body {
   opacity: 1;
 }
 
-#debug {
-  font-size: 0.65rem;
-  margin-top: 1rem;
-  opacity: 0.3;
-  font-variant-numeric: tabular-nums;
+.volume-bar-spacer {
+  width: 4px;
+}
+
+#volume-bar {
+  width: 4px;
+  height: 1.2rem;
+  border: 1px solid #444;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  opacity: 0.5;
+}
+
+#volume-fill {
+  width: 100%;
+  background: #eee;
+  transition: height 0.05s;
 }
 
 #string-label {

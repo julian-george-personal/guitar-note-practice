@@ -5,7 +5,7 @@ import { pitchClass, toSharp, type AudioData } from '../lib/audio'
 import { useNoteMatch } from '../hooks/useNoteMatch'
 import NoteDisplay from '../components/NoteDisplay'
 import DetectedNote from '../components/DetectedNote'
-import DebugInfo from '../components/DebugInfo'
+import VolumeBar from '../components/VolumeBar'
 import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, octaveMatch, openNoteForString } from '../lib/string-logic'
 import ScaleInput from '../components/ScaleInput'
 import ConfigSection from '../components/ConfigSection'
@@ -138,8 +138,11 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
       </ConfigSection>
       <div id="string-label">String {target.string} ({openNoteForString(tuningNotes, target.string)})</div>
       <NoteDisplay note={pitchClass(target.note)} correct={correct} />
-      <DetectedNote detected={audio.note} isMatch={isMatch} />
-      <DebugInfo freq={audio.freq} db={audio.db} />
+      <div className="detected-row">
+        <div className="volume-bar-spacer" aria-hidden="true" />
+        <DetectedNote detected={audio.note} isMatch={isMatch} />
+        <VolumeBar db={audio.db} />
+      </div>
     </div>
   )
 }

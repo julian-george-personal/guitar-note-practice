@@ -3,7 +3,7 @@ import { randomNote, type AudioData } from '../lib/audio'
 import { useNoteMatch } from '../hooks/useNoteMatch'
 import NoteDisplay from '../components/NoteDisplay'
 import DetectedNote from '../components/DetectedNote'
-import DebugInfo from '../components/DebugInfo'
+import VolumeBar from '../components/VolumeBar'
 import ScaleInput from '../components/ScaleInput'
 import ConfigSection from '../components/ConfigSection'
 import { storage } from '../storage'
@@ -28,8 +28,11 @@ export default function NoteExercise({ audio }: { audio: AudioData }) {
         <ScaleInput onCommit={setScale} />
       </ConfigSection>
       <NoteDisplay note={target} correct={correct} />
-      <DetectedNote detected={audio.note} isMatch={isMatch} />
-      <DebugInfo freq={audio.freq} db={audio.db} />
+      <div className="detected-row">
+        <div className="volume-bar-spacer" aria-hidden="true" />
+        <DetectedNote detected={audio.note} isMatch={isMatch} />
+        <VolumeBar db={audio.db} />
+      </div>
     </div>
   )
 }
