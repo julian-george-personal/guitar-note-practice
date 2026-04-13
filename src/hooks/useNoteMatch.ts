@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react'
 import { pitchClass } from '../lib/audio'
+import { AUDIO_CONFIG } from '../lib/audio-config'
 
 type MatchFn = (detected: string, target: string) => boolean
 
@@ -23,7 +24,7 @@ export function useNoteMatch(
 
     if (matchFn(detected, target)) {
       if (!matchStart.current) matchStart.current = performance.now()
-      if (performance.now() - matchStart.current > 200) {
+      if (performance.now() - matchStart.current > AUDIO_CONFIG.noteHoldMs) {
         advancing.current = true
         matchStart.current = null
         setCorrect(true)

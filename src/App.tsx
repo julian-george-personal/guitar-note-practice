@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import './App.css'
 import { startListening, type AudioData } from './lib/audio'
 import NoteExercise from './exercises/NoteExercise'
@@ -13,6 +13,22 @@ export default function App() {
   const [status, setStatus] = useState(Status.Idle)
   const [audio, setAudio] = useState<AudioData>({ note: null, freq: null, db: -Infinity })
   const [exercise, setExercise] = useState<ExerciseKey>('note')
+
+  const wakeLock = useRef<WakeLockSentinel | null>(null)
+
+  useEffect(() => {
+    if (status !== Status.Listening) return
+    const acquire = async () => {
+      if (document.visibilityState !== 'visible') return
+      try { wakeLock.current = await navigator.wakeLock.request('screen') } catch {}
+    }
+    acquire()
+    document.addEventListener('visibilitychange', acquire)
+    return () => {
+      document.removeEventListener('visibilitychange', acquire)
+      wakeLock.current?.release()
+    }
+  }, [status])
 
   const start = useCallback(async () => {
     setStatus(Status.Loading)

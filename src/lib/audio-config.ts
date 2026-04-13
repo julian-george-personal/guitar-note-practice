@@ -27,11 +27,16 @@ export const AUDIO_CONFIG = {
   yin: {
     // Controls how periodic the signal must be for a pitch to be detected at all.
     // Raise if the detector fires on noise or muted strings; lower if it misses quiet notes.
-    threshold: 0.4,
+    threshold: 0.5,
     // Secondary confidence filter applied after a candidate period is found.
     // Raise if you're getting ghost detections that survive the threshold; rarely needs tuning.
     probabilityThreshold: 0.1,
   },
+
+  // -- Note matching --
+  // How long (ms) the correct note must be held before advancing.
+  // Lower = easier to trigger on short/dead notes; higher = fewer accidental advances.
+  noteHoldMs: 100,
 
   // -- Detection frequency range (Hz) --
   // Filters out results outside the guitar range.

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import './StringExercise.css'
 import { useValidatedInput } from '../hooks/useValidatedInput'
 import { Note } from 'tonal'
@@ -55,7 +55,9 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     })
   }, [])
 
+  const mounted = useRef(false)
   useEffect(() => {
+    if (!mounted.current) { mounted.current = true; return }
     setEnabledStrings(allStrings)
   }, [allStrings])
 
@@ -123,7 +125,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
             onChange={e => fretRangeInput.set(`${e.target.value}-${maxStr ?? ''}`)}
             onBlur={fretRangeInput.onBlur}
           />
-          <span>-</span>
+          <span>–</span>
           <input id="fret-max-input" type="text" value={maxStr ?? ''}
             onChange={e => fretRangeInput.set(`${minStr ?? ''}-${e.target.value}`)}
             onBlur={fretRangeInput.onBlur}
