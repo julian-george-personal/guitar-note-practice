@@ -3,13 +3,9 @@ import './StringExercise.css'
 import { useValidatedInput } from '../hooks/useValidatedInput'
 import { Note } from 'tonal'
 import { pitchClass, toSharp, type AudioData } from '../lib/audio'
-import { useNoteMatch } from '../hooks/useNoteMatch'
-import NoteDisplay from '../components/NoteDisplay'
-import DetectedNote from '../components/DetectedNote'
-import VolumeBar from '../components/VolumeBar'
-import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, octaveMatch, openNoteForString } from '../lib/string-logic'
+import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, octaveMatch, openNoteForString, type StringTarget } from '../lib/string-logic'
 import ScaleInput from '../components/ScaleInput'
-import ConfigSection from '../components/ConfigSection'
+import ExerciseFrame from './ExerciseFrame'
 import { storage } from '../storage'
 
 export default function StringExercise({ audio }: { audio: AudioData }) {
@@ -63,22 +59,21 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     setEnabledStrings(allStrings)
   }, [allStrings])
 
-  const [target, setTarget] = useState(() => randomStringNote(tuningNotes, null, scale, fretRange, enabledStrings))
-
-  const advance = useCallback(() => {
-    setTarget(t => randomStringNote(tuningNotes, t, scale, fretRange, enabledStrings))
-  }, [tuningNotes, scale, fretRange, enabledStrings])
-
-  useEffect(() => {
-    setTarget(randomStringNote(tuningNotes, null, scale, fretRange, enabledStrings))
-  }, [fretRange, scale, enabledStrings, tuningNotes])
-
-  const { correct, isMatch } = useNoteMatch(target.note, audio.note, advance, octaveMatch)
+  const generateNextNote = useCallback(
+    (prev: StringTarget | null) => randomStringNote(tuningNotes, prev, scale, fretRange, enabledStrings),
+    [tuningNotes, scale, fretRange, enabledStrings]
+  )
 
   return (
-    <div>
-      <ConfigSection>
-        <div className="input-group">
+    <ExerciseFrame
+      audio={audio}
+      generateNextNote={generateNextNote}
+      displayNote={t => pitchClass(t.note)}
+      matchNote={t => t.note}
+      matchFn={octaveMatch}
+      label={t => `String ${t.string} (${openNoteForString(tuningNotes, t.string)})`}
+    >
+      <div className="input-group">
         <label id="strings-label">Strings</label>
         <div className="string-chips">
           {Array.from({ length: tuningNotes.length }, (_, i) => {
@@ -119,31 +114,23 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
             )
           })}
         </div>
-        </div>
-        <ScaleInput onCommit={setScale} />
-        <div className="input-group">
-          <label id="fret-label">Fret Range</label>
-          <div className="fret-range">
-            <input id="fret-min-input" type="text" value={minStr ?? ''}
-              onChange={e => fretRangeInput.set(`${e.target.value}-${maxStr ?? ''}`)}
-              onBlur={fretRangeInput.onBlur}
-            />
-            <span>-</span>
-            <input id="fret-max-input" type="text" value={maxStr ?? ''}
-              onChange={e => fretRangeInput.set(`${minStr ?? ''}-${e.target.value}`)}
-              onBlur={fretRangeInput.onBlur}
-            />
-          </div>
-          {!fretRangeInput.isValid && <span className="input-error">Invalid range</span>}
-        </div>
-      </ConfigSection>
-      <div id="string-label">String {target.string} ({openNoteForString(tuningNotes, target.string)})</div>
-      <NoteDisplay note={pitchClass(target.note)} correct={correct} />
-      <div className="detected-row">
-        <div className="volume-bar-spacer" aria-hidden="true" />
-        <DetectedNote detected={audio.note} isMatch={isMatch} />
-        <VolumeBar db={audio.db} />
       </div>
-    </div>
+      <ScaleInput onCommit={setScale} />
+      <div className="input-group">
+        <label id="fret-label">Fret Range</label>
+        <div className="fret-range">
+          <input id="fret-min-input" type="text" value={minStr ?? ''}
+            onChange={e => fretRangeInput.set(`${e.target.value}-${maxStr ?? ''}`)}
+            onBlur={fretRangeInput.onBlur}
+          />
+          <span>-</span>
+          <input id="fret-max-input" type="text" value={maxStr ?? ''}
+            onChange={e => fretRangeInput.set(`${minStr ?? ''}-${e.target.value}`)}
+            onBlur={fretRangeInput.onBlur}
+          />
+        </div>
+        {!fretRangeInput.isValid && <span className="input-error">Invalid range</span>}
+      </div>
+    </ExerciseFrame>
   )
 }

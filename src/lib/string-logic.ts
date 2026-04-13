@@ -64,7 +64,7 @@ export function randomStringNote(tuning: string[], current: StringTarget | null,
     const pool = filtered.length > 0 ? filtered : allNotes
     note = pool[Math.floor(Math.random() * pool.length)]
     attempts++
-  } while (attempts < 50 && current && str === current.string && note === current.note)
+  } while (attempts < 50 && current && Note.pitchClass(note) === Note.pitchClass(current.note))
   return { string: str, note }
 }
 
