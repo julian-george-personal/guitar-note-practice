@@ -1,7 +1,7 @@
 import './VolumeBar.css'
 import { AUDIO_CONFIG } from '../lib/audio-config'
 
-const MIN_DB = AUDIO_CONFIG.compressor.threshold
+const MIN_DB = AUDIO_CONFIG.compressor.threshold + 20 * Math.log10(AUDIO_CONFIG.gain)
 const MAX_DB = 0
 
 export default function VolumeBar({ db }: { db: number }) {

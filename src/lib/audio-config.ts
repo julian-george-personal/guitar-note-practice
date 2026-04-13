@@ -25,10 +25,12 @@ export const AUDIO_CONFIG = {
 
   // -- YIN pitch detector --
   yin: {
-    // Aperiodicity tolerance. Lower = stricter pitch detection. Default 0.1.
-    threshold: 0.3,
-    // Minimum confidence to accept a pitch. Lower = more permissive. Default 0.1.
-    probabilityThreshold: 0.05,
+    // Controls how periodic the signal must be for a pitch to be detected at all.
+    // Raise if the detector fires on noise or muted strings; lower if it misses quiet notes.
+    threshold: 0.4,
+    // Secondary confidence filter applied after a candidate period is found.
+    // Raise if you're getting ghost detections that survive the threshold; rarely needs tuning.
+    probabilityThreshold: 0.1,
   },
 
   // -- Detection frequency range (Hz) --

@@ -75,7 +75,7 @@ export function octaveMatch(detected: string, target: string): boolean {
   const dOct = Note.octave(d)
   const tOct = Note.octave(t)
   if (dOct == null || tOct == null) return false
-  return Math.abs(dOct - tOct) <= 1
+  return dOct === tOct
 }
 
 export function validateScale(input: string): boolean {
