@@ -1,5 +1,3 @@
-import { Note } from 'tonal'
-
 export const AUDIO_CONFIG = {
   // -- Compressor (applied first to tame peaks) --
   compressor: {
@@ -39,13 +37,6 @@ export const AUDIO_CONFIG = {
   // How long (ms) the correct note must be held before advancing.
   // Lower = easier to trigger on short/dead notes; higher = fewer accidental advances.
   noteHoldMs: 50,
-  // At or above this note, full noteHoldMs applies.
-  // Below it, hold time interpolates down toward noteHoldMinMs.
-  noteHoldMaxNote: Note.freq('E3')!,
-  // At or below this note, noteHoldMinMs applies.
-  noteHoldMinNote: Note.freq('G2')!,
-  // Hold time floor, used at noteHoldMinNote and below.
-  noteHoldMinMs: 10,
 
   // -- Detection frequency range (Hz) --
   // Filters out results outside the guitar range.

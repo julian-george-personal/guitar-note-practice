@@ -15,34 +15,41 @@ export function useNoteMatch(
 ) {
   const [correct, setCorrect] = useState(false)
   const matchStart = useRef<number | null>(null)
+  const lockedOctave = useRef<number | null>(null)
   const advancing = useRef(false)
+
+  const resetTimer = () => { matchStart.current = null; lockedOctave.current = null }
 
   const check = useCallback(() => {
     if (!detected || advancing.current) {
-      if (!detected) matchStart.current = null
+      if (!detected) resetTimer()
       return
     }
 
-    if (matchFn(detected, target)) {
-      if (!matchStart.current) matchStart.current = performance.now()
-      const freq = Note.freq(target)
-      let holdMs = AUDIO_CONFIG.noteHoldMs
-      if (freq && freq < AUDIO_CONFIG.noteHoldMaxNote) {
-        const t = Math.max(0, (freq - AUDIO_CONFIG.noteHoldMinNote) / (AUDIO_CONFIG.noteHoldMaxNote - AUDIO_CONFIG.noteHoldMinNote))
-        holdMs = AUDIO_CONFIG.noteHoldMinMs + t * (AUDIO_CONFIG.noteHoldMs - AUDIO_CONFIG.noteHoldMinMs)
+    if (pitchClass(detected) === pitchClass(target)) {
+      if (!matchStart.current && matchFn(detected, target)) {
+        matchStart.current = performance.now()
+        lockedOctave.current = Note.octave(detected) ?? null
       }
-      if (performance.now() - matchStart.current > holdMs) {
-        advancing.current = true
-        matchStart.current = null
-        setCorrect(true)
-        setTimeout(() => {
-          onAdvance()
-          setCorrect(false)
-          advancing.current = false
-        }, 400)
+      const detectedOct = Note.octave(detected)
+      const octaveOk = lockedOctave.current == null || detectedOct == null
+        || detectedOct >= lockedOctave.current
+      if (matchStart.current && octaveOk) {
+        if (performance.now() - matchStart.current > AUDIO_CONFIG.noteHoldMs) {
+          advancing.current = true
+          resetTimer()
+          setCorrect(true)
+          setTimeout(() => {
+            onAdvance()
+            setCorrect(false)
+            advancing.current = false
+          }, 300)
+        }
+      } else {
+        resetTimer()
       }
     } else {
-      matchStart.current = null
+      resetTimer()
     }
   }, [target, detected, onAdvance, matchFn])
 

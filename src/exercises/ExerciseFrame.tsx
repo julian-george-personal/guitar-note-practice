@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react'
-import { type AudioData } from '../lib/audio'
+import { pitchClass, type AudioData } from '../lib/audio'
 import { useNoteMatch } from '../hooks/useNoteMatch'
 import NoteDisplay from '../components/NoteDisplay'
 import DetectedNote from '../components/DetectedNote'
@@ -37,7 +37,7 @@ export default function ExerciseFrame<T,>({
       <NoteDisplay note={displayNote(target)} correct={correct} />
       <div className="detected-row">
         <div className="volume-bar-spacer" aria-hidden="true" />
-        <DetectedNote detected={audio.note} isMatch={isMatch} />
+        <DetectedNote detected={audio.note ? pitchClass(audio.note) : null} isMatch={isMatch} />
         <VolumeBar db={audio.db} />
       </div>
     </div>
