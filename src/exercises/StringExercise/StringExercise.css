@@ -5,7 +5,8 @@
 }
 
 #strings-label,
-#fret-label {
+#fret-label,
+#order-label {
   font-size: 0.85rem;
   opacity: 0.4;
   margin-bottom: 0.1rem;
@@ -73,4 +74,19 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
+}
+
+#order-select {
+  padding: 0.4rem 0.8rem;
+  font-size: 1rem;
+  background: transparent;
+  color: #eee;
+  border: 1px solid #444;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 8rem;
+}
+
+#order-select option {
+  background: #1a1a2e;
 }

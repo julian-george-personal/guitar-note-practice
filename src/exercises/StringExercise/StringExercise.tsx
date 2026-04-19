@@ -3,7 +3,7 @@ import './StringExercise.css'
 import { useValidatedInput } from '../../hooks/useValidatedInput'
 import { Note } from 'tonal'
 import { pitchClass, toSharp, type AudioData } from '../../lib/audio'
-import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, octaveMatch, openNoteForString, type StringTarget } from '../../lib/string-logic'
+import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, allStringNotes, octaveMatch, openNoteForString, type StringTarget } from '../../lib/string-logic'
 import ScaleInput from '../../components/ScaleInput/ScaleInput'
 import ExerciseFrame from '../ExerciseFrame/ExerciseFrame'
 import { storage } from '../../storage'
@@ -38,7 +38,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     (v) => parseFretRange(v) !== null,
     { persist: storage.fretRange.set, revertOnInvalid: true }
   )
-  const fretRange = useMemo(() => parseFretRange(fretRangeInput.committed) ?? [0, 11], [fretRangeInput.committed])
+  const fretRange = useMemo(() => parseFretRange(fretRangeInput.committed) ?? ([0, 11] as [number, number]), [fretRangeInput.committed])
   const [minStr, maxStr] = fretRangeInput.value.split('-')
 
   const allStrings = useMemo(() => Array.from({ length: tuningNotes.length }, (_, i) => i + 1), [tuningNotes.length])
@@ -61,9 +61,34 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     setEnabledStrings(allStrings)
   }, [allStrings])
 
+  const [order, setOrder] = useState<'random' | 'ascending' | 'descending'>(
+    () => (storage.order.get() as 'random' | 'ascending' | 'descending')
+  )
+
+  const sortedNotes = useMemo(() => {
+    if (order === 'random') return []
+    const notes = allStringNotes(tuningNotes, scale, fretRange, enabledStrings)
+    if (order === 'ascending') {
+      // For same pitch, prefer the lower string number (next string up).
+      notes.sort((a, b) => (Note.midi(a.note) ?? 0) - (Note.midi(b.note) ?? 0) || a.string - b.string)
+    } else {
+      // For same pitch, prefer the higher string number (next string down).
+      notes.sort((a, b) => (Note.midi(b.note) ?? 0) - (Note.midi(a.note) ?? 0) || b.string - a.string)
+    }
+    // Drop repeated pitches — each pitch should appear on one string only.
+    return notes.filter((n, i) => i === 0 || Note.midi(n.note) !== Note.midi(notes[i - 1].note))
+  }, [tuningNotes, scale, fretRange, enabledStrings, order])
+
+  const seqIndex = useRef(0)
+
   const generateNextNote = useCallback(
-    (prev: StringTarget | null) => randomStringNote(tuningNotes, prev, scale, fretRange, enabledStrings),
-    [tuningNotes, scale, fretRange, enabledStrings]
+    (prev: StringTarget | null): StringTarget => {
+      if (order === 'random') return randomStringNote(tuningNotes, prev, scale, fretRange, enabledStrings)
+      if (prev === null) { seqIndex.current = 0; return sortedNotes[0] }
+      seqIndex.current = (seqIndex.current + 1) % sortedNotes.length
+      return sortedNotes[seqIndex.current]
+    },
+    [order, tuningNotes, scale, fretRange, enabledStrings, sortedNotes]
   )
 
   return (
@@ -118,6 +143,18 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
         </div>
       </div>
       <ScaleInput onCommit={setScale} />
+      <div className="input-group">
+        <label id="order-label">Order</label>
+        <select id="order-select" value={order} onChange={e => {
+          const v = e.target.value as 'random' | 'ascending' | 'descending'
+          setOrder(v)
+          storage.order.set(v)
+        }}>
+          <option value="random">Random</option>
+          <option value="ascending">Ascending</option>
+          <option value="descending">Descending</option>
+        </select>
+      </div>
       <div className="input-group">
         <label id="fret-label">Fret Range</label>
         <div className="fret-range">

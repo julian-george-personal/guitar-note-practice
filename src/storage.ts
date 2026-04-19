@@ -18,4 +18,8 @@ export const storage = {
     },
     set: (v: number[]) => localStorage.setItem('enabledStrings', JSON.stringify(v)),
   },
+  order: {
+    get: () => localStorage.getItem('order') ?? 'random',
+    set: (v: string) => localStorage.setItem('order', v),
+  },
 }

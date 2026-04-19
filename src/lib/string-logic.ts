@@ -50,6 +50,23 @@ function notesOnString(openNote: string, openOctave: number, fretMin: number, fr
   return Range.chromatic([from, to], { sharps: true })
 }
 
+export function allStringNotes(tuning: string[], scale: string | null, fretRange: [number, number], enabledStrings: number[] | null): StringTarget[] {
+  const strings = enabledStrings && enabledStrings.length > 0
+    ? enabledStrings
+    : Array.from({ length: tuning.length }, (_, i) => i + 1)
+  const [fretMin, fretMax] = fretRange
+  const all: StringTarget[] = []
+  for (const str of strings) {
+    const stringIdx = tuning.length - str
+    const notes = notesOnString(tuning[stringIdx], STANDARD_OCTAVES[stringIdx] ?? 3, fretMin, fretMax)
+    const filtered = filterByScale(notes, scale)
+    const pool = filtered.length > 0 ? filtered : notes
+    for (const note of pool) all.push({ string: str, note })
+  }
+  all.sort((a, b) => (Note.midi(a.note) ?? 0) - (Note.midi(b.note) ?? 0))
+  return all
+}
+
 export function randomStringNote(tuning: string[], current: StringTarget | null, scale: string | null = null, fretRange: [number, number] = [0, 11], enabledStrings: number[] | null = null): StringTarget {
   const strings = enabledStrings && enabledStrings.length > 0 ? enabledStrings : Array.from({ length: tuning.length }, (_, i) => i + 1)
   let str: number
