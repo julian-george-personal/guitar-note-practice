@@ -1,10 +1,13 @@
 import { useState, useCallback, useEffect } from 'react'
-import { pitchClass, type AudioData } from '../lib/audio'
-import { useNoteMatch } from '../hooks/useNoteMatch'
-import NoteDisplay from '../components/NoteDisplay'
-import DetectedNote from '../components/DetectedNote'
-import VolumeBar from '../components/VolumeBar'
-import ConfigSection from '../components/ConfigSection'
+import { pitchClass, type AudioData } from '../../lib/audio'
+import { useNoteMatch } from '../../hooks/useNoteMatch'
+import { useDebugMode } from '../../hooks/useDebugMode'
+import NoteDisplay from '../../components/NoteDisplay/NoteDisplay'
+import DetectedNote from '../../components/DetectedNote/DetectedNote'
+import VolumeBar from '../../components/VolumeBar/VolumeBar'
+import ConfigSection from '../../components/ConfigSection/ConfigSection'
+import DebugFreq from '../../components/DebugFreq/DebugFreq'
+import DebugSpectrum from '../../components/DebugSpectrum/DebugSpectrum'
 
 type MatchFn = (detected: string, target: string) => boolean
 
@@ -27,6 +30,13 @@ export default function ExerciseFrame<T,>({
 
   const advance = useCallback(() => setTarget(t => generateNextNote(t)), [generateNextNote])
 
+  const { debugOpen } = useDebugMode()
+  useEffect(() => {
+    if (!debugOpen) return
+    window.addEventListener('click', advance)
+    return () => window.removeEventListener('click', advance)
+  }, [debugOpen, advance])
+
   const noteForMatch = (matchNote ?? displayNote)(target)
   const { correct, isMatch } = useNoteMatch(noteForMatch, audio.note, advance, matchFn)
 
@@ -40,6 +50,8 @@ export default function ExerciseFrame<T,>({
         <DetectedNote detected={audio.note ? pitchClass(audio.note) : null} isMatch={isMatch} />
         <VolumeBar db={audio.db} />
       </div>
+      {debugOpen && <DebugFreq freq={audio.freq} />}
+      {debugOpen && <DebugSpectrum />}
     </div>
   )
 }

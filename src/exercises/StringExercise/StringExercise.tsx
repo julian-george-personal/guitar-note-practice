@@ -1,12 +1,12 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import './StringExercise.css'
-import { useValidatedInput } from '../hooks/useValidatedInput'
+import { useValidatedInput } from '../../hooks/useValidatedInput'
 import { Note } from 'tonal'
-import { pitchClass, toSharp, type AudioData } from '../lib/audio'
-import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, octaveMatch, openNoteForString, type StringTarget } from '../lib/string-logic'
-import ScaleInput from '../components/ScaleInput'
-import ExerciseFrame from './ExerciseFrame'
-import { storage } from '../storage'
+import { pitchClass, toSharp, type AudioData } from '../../lib/audio'
+import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, octaveMatch, openNoteForString, type StringTarget } from '../../lib/string-logic'
+import ScaleInput from '../../components/ScaleInput/ScaleInput'
+import ExerciseFrame from '../ExerciseFrame/ExerciseFrame'
+import { storage } from '../../storage'
 
 export default function StringExercise({ audio }: { audio: AudioData }) {
   const [scale, setScale] = useState<string | null>(() => storage.scale.get() || null)

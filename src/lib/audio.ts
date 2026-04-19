@@ -54,7 +54,7 @@ export interface AudioData {
   db: number
 }
 
-export async function startListening(onData: (data: AudioData) => void) {
+export async function startListening(onData: (data: AudioData) => void): Promise<{ analyser: AnalyserNode }> {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
   const ctx = new AudioContext()
   const analyser = createAudioPipeline(ctx, stream)
@@ -79,4 +79,5 @@ export async function startListening(onData: (data: AudioData) => void) {
   }
 
   requestAnimationFrame(loop)
+  return { analyser }
 }

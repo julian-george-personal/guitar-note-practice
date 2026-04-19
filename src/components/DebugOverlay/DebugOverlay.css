@@ -1,0 +1,18 @@
+.debug-overlay {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #0f0;
+  font-family: monospace;
+  font-size: 0.75rem;
+  padding: 6px 10px;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+.debug-overlay ul {
+  margin: 4px 0 0;
+  padding-left: 1.2em;
+  display: inline-block;
+}

@@ -1,5 +1,5 @@
 import './VolumeBar.css'
-import { AUDIO_CONFIG } from '../lib/audio-config'
+import { AUDIO_CONFIG } from '../../lib/audio-config'
 
 const MIN_DB = AUDIO_CONFIG.compressor.threshold + 20 * Math.log10(AUDIO_CONFIG.gain)
 const MAX_DB = 0

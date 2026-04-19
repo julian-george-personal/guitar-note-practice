@@ -1,7 +1,7 @@
 import './ScaleInput.css'
-import { useValidatedInput } from '../hooks/useValidatedInput'
-import { validateScale } from '../lib/string-logic'
-import { storage } from '../storage'
+import { useValidatedInput } from '../../hooks/useValidatedInput'
+import { validateScale } from '../../lib/string-logic'
+import { storage } from '../../storage'
 
 export default function ScaleInput({ onCommit }: { onCommit: (scale: string | null) => void }) {
   const { value, onChange, onBlur, isValid } = useValidatedInput(

@@ -1,8 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import './App.css'
 import { startListening, type AudioData } from './lib/audio'
-import NoteExercise from './exercises/NoteExercise'
-import StringExercise from './exercises/StringExercise'
+import { useDebugMode } from './hooks/useDebugMode'
+import NoteExercise from './exercises/NoteExercise/NoteExercise'
+import StringExercise from './exercises/StringExercise/StringExercise'
 
 enum Status { Idle, Loading, Listening }
 
@@ -14,6 +15,7 @@ export default function App() {
   const [audio, setAudio] = useState<AudioData>({ note: null, freq: null, db: -Infinity })
   const [exercise, setExercise] = useState<ExerciseKey>('note')
 
+  const { setAnalyser } = useDebugMode()
   const wakeLock = useRef<WakeLockSentinel | null>(null)
 
   useEffect(() => {
@@ -32,7 +34,8 @@ export default function App() {
 
   const start = useCallback(async () => {
     setStatus(Status.Loading)
-    await startListening(setAudio)
+    const { analyser } = await startListening(setAudio)
+    setAnalyser(analyser)
     setStatus(Status.Listening)
   }, [])
 
