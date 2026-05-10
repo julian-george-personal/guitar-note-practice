@@ -1,0 +1,48 @@
+.string-chips {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+}
+
+.string-chip {
+  min-width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 1.4rem;
+  border: 1px solid #444;
+  background: transparent;
+  color: #eee;
+  font-size: 0.75rem;
+  cursor: pointer;
+  opacity: 0.25;
+  transition: opacity 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  padding: 0 0.7rem;
+}
+
+.string-chip.active {
+  opacity: 1;
+  border-color: #aaa;
+}
+
+.string-chip.no-toggle {
+  cursor: default;
+}
+
+.string-chip-label {
+  cursor: text;
+}
+
+.string-chip-input {
+  width: 2rem;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1rem;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  padding: 0;
+}
