@@ -1,0 +1,24 @@
+.fretboard-diagram {
+  display: block;
+  margin-top: 1rem;
+  overflow: visible;
+}
+
+.fbd-label {
+  fill: #666;
+  font-size: 10px;
+  font-family: inherit;
+  text-anchor: middle;
+}
+
+.fbd-dot {
+  fill: #ddd;
+}
+
+.fbd-dot-text {
+  fill: #1a1a1a;
+  font-size: 7.5px;
+  font-family: inherit;
+  text-anchor: middle;
+  pointer-events: none;
+}

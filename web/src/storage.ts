@@ -1,12 +1,14 @@
+import type { ExerciseConfig } from './lib/exercise-config'
+
 export const storage = {
   scale: {
     get: () => localStorage.getItem('scale') ?? '',
     set: (v: string) => localStorage.setItem('scale', v),
   },
-  tuning: {
-    get: () => localStorage.getItem('tuning'),
-    set: (v: string) => localStorage.setItem('tuning', v),
-  },
+  tuning: (exercise: string) => ({
+    get: () => localStorage.getItem(`tuning:${exercise}`),
+    set: (v: string) => localStorage.setItem(`tuning:${exercise}`, v),
+  }),
   fretRange: {
     get: () => localStorage.getItem('fretRange'),
     set: (v: string) => localStorage.setItem('fretRange', v),
@@ -21,5 +23,16 @@ export const storage = {
   order: {
     get: () => localStorage.getItem('order') ?? 'random',
     set: (v: string) => localStorage.setItem('order', v),
+  },
+  exercisePrompt: {
+    get: () => localStorage.getItem('exercisePrompt') ?? '',
+    set: (v: string) => localStorage.setItem('exercisePrompt', v),
+  },
+  exerciseConfig: {
+    get: (): ExerciseConfig | null => {
+      const v = localStorage.getItem('exerciseConfig')
+      return v ? JSON.parse(v) : null
+    },
+    set: (v: ExerciseConfig) => localStorage.setItem('exerciseConfig', JSON.stringify(v)),
   },
 }

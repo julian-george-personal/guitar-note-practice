@@ -7,9 +7,9 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   background: #1a1a2e;
   color: #eee;
-  height: 100dvh;
+  min-height: 100dvh;
   display: flex;
-  align-items: center;
+  align-items: safe center;
   justify-content: center;
 }
 

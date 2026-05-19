@@ -4,10 +4,11 @@ import { startListening, type AudioData } from './lib/audio'
 import { useDebugMode } from './hooks/useDebugMode'
 import NoteExercise from './exercises/NoteExercise/NoteExercise'
 import StringExercise from './exercises/StringExercise/StringExercise'
+import CustomExercise from './exercises/CustomExercise/CustomExercise'
 
 enum Status { Idle, Loading, Listening }
 
-const EXERCISES = { note: NoteExercise, string: StringExercise } as const
+const EXERCISES = { note: NoteExercise, string: StringExercise, custom: CustomExercise } as const
 type ExerciseKey = keyof typeof EXERCISES
 
 export default function App() {
@@ -57,9 +58,11 @@ export default function App() {
         <select id="exercise-select" value={exercise} onChange={e => setExercise(e.target.value as ExerciseKey)}>
           <option value="note">Note</option>
           <option value="string">String</option>
+          <option value="custom">Custom (AI)</option>
         </select>
       </div>
       <div id="config-portal" />
+      <div id="fretboard-portal" />
     </div>
   )
 }

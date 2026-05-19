@@ -1,36 +1,28 @@
-import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef, useLayoutEffect } from 'react'
+import { createPortal } from 'react-dom'
 import './StringExercise.css'
 import { useValidatedInput } from '../../hooks/useValidatedInput'
 import { Note } from 'tonal'
-import { pitchClass, toSharp, type AudioData } from '../../lib/audio'
+import { pitchClass, type AudioData } from '../../lib/audio'
 import { DEFAULT_TUNING, DEFAULT_FRET_RANGE, parseTuning, parseFretRange, randomStringNote, allStringNotes, octaveMatch, openNoteForString, type StringTarget } from '../../lib/string-logic'
 import ScaleInput from '../../components/ScaleInput/ScaleInput'
+import TuningInput from '../../components/TuningInput/TuningInput'
 import ExerciseFrame from '../ExerciseFrame/ExerciseFrame'
 import { storage } from '../../storage'
+import { useDebugMode } from '../../hooks/useDebugMode'
+import FretboardDiagram from '../../components/FretboardDiagram/FretboardDiagram'
+import { type ExerciseConfig } from '../../lib/exercise-config'
 
 export default function StringExercise({ audio }: { audio: AudioData }) {
   const [scale, setScale] = useState<string | null>(() => storage.scale.get() || null)
 
   const [tuningNotes, setTuningNotes] = useState<string[]>(() =>
-    parseTuning(storage.tuning.get() || DEFAULT_TUNING)
+    parseTuning(storage.tuning('string').get() || DEFAULT_TUNING)
   )
-  const [editState, setEditState] = useState<{ index: number; draft: string } | null>(null)
 
-  const commitChipEdit = useCallback((index: number) => {
-    setEditState(prev => {
-      if (!prev || prev.index !== index) return prev
-      const n = Note.get(prev.draft.trim())
-      if (!n.empty) {
-        const note = toSharp(n.pc)
-        setTuningNotes(notes => {
-          const next = [...notes]
-          next[index] = note
-          storage.tuning.set(next.join(''))
-          return next
-        })
-      }
-      return null
-    })
+  const handleTuningChange = useCallback((notes: string[]) => {
+    setTuningNotes(notes)
+    storage.tuning('string').set(notes.join(''))
   }, [])
 
   const fretRangeInput = useValidatedInput(
@@ -79,6 +71,19 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     return notes.filter((n, i) => i === 0 || Note.midi(n.note) !== Note.midi(notes[i - 1].note))
   }, [tuningNotes, scale, fretRange, enabledStrings, order])
 
+  const { debugOpen } = useDebugMode()
+  const [fretboardPortal, setFretboardPortal] = useState<HTMLElement | null>(null)
+  useLayoutEffect(() => { setFretboardPortal(document.getElementById('fretboard-portal')) }, [])
+
+  const debugConfig = useMemo<ExerciseConfig>(() => ({
+    description: '',
+    mode: 'string',
+    tuning: tuningNotes.join(''),
+    fretRange: fretRangeInput.committed,
+    enabledStrings,
+    scales: scale ? [scale] : undefined,
+  }), [tuningNotes, fretRangeInput.committed, enabledStrings, scale])
+
   const seqIndex = useRef(0)
 
   const generateNextNote = useCallback(
@@ -92,6 +97,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
   )
 
   return (
+    <>
     <ExerciseFrame
       audio={audio}
       generateNextNote={generateNextNote}
@@ -102,45 +108,12 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
     >
       <div className="input-group">
         <label id="strings-label">Strings</label>
-        <div className="string-chips">
-          {Array.from({ length: tuningNotes.length }, (_, i) => {
-            const str = tuningNotes.length - i
-            const noteIndex = tuningNotes.length - str
-            const isEditing = editState?.index === noteIndex
-            return (
-              <div
-                key={str}
-                className={`string-chip${enabledStrings.includes(str) ? ' active' : ''}`}
-                onClick={() => toggleString(str)}
-              >
-                {isEditing ? (
-                  <input
-                    className="string-chip-input"
-                    value={editState.draft}
-                    autoFocus
-                    onChange={e => setEditState({ index: noteIndex, draft: e.target.value })}
-                    onClick={e => e.stopPropagation()}
-                    onBlur={() => commitChipEdit(noteIndex)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter') e.currentTarget.blur()
-                      if (e.key === 'Escape') setEditState(null)
-                    }}
-                  />
-                ) : (
-                  <span
-                    className="string-chip-label"
-                    onClick={e => {
-                      e.stopPropagation()
-                      setEditState({ index: noteIndex, draft: openNoteForString(tuningNotes, str) })
-                    }}
-                  >
-                    {openNoteForString(tuningNotes, str)}
-                  </span>
-                )}
-              </div>
-            )
-          })}
-        </div>
+        <TuningInput
+          tuningNotes={tuningNotes}
+          onChange={handleTuningChange}
+          enabledStrings={enabledStrings}
+          onToggle={toggleString}
+        />
       </div>
       <ScaleInput onCommit={setScale} />
       <div className="input-group">
@@ -171,5 +144,7 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
         {!fretRangeInput.isValid && <span className="input-error">Invalid range</span>}
       </div>
     </ExerciseFrame>
+    {debugOpen && fretboardPortal && createPortal(<FretboardDiagram config={debugConfig} />, fretboardPortal)}
+    </>
   )
 }
