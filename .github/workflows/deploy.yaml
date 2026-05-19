@@ -33,6 +33,8 @@ jobs:
         run: npm run build
         env:
           VITE_FRETBOARDER_LAMBDA_URL: ${{ vars.VITE_FRETBOARDER_LAMBDA_URL }}
+      - name: Verify URL in bundle
+        run: grep -r "lambda-url.us-east-1" web/dist/ || echo "URL NOT FOUND IN BUNDLE"
       - name: Upload web to S3
         run: aws s3 cp web/dist s3://static-sites-juliangeorge/${{ env.SITE_NAME }} --recursive
       - name: Build job
