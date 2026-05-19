@@ -29,6 +29,8 @@ jobs:
         run: npm ci
       - name: Build web
         run: npm run build
+        env:
+          VITE_FRETBOARDER_LAMBDA_URL: ${{ secrets.VITE_FRETBOARDER_LAMBDA_URL }}
       - name: Upload web to S3
         run: aws s3 cp web/dist s3://static-sites-juliangeorge/${{ env.SITE_NAME }} --recursive
       - name: Build job

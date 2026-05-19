@@ -106,7 +106,7 @@ export async function generateExerciseConfig(
   onProgress: (msg: string) => void,
 ): Promise<ExerciseConfig> {
   onProgress('Generating…')
-  const res = await fetch(import.meta.env.VITE_GENERATE_URL, {
+  const res = await fetch(import.meta.env.VITE_FRETBOARDER_LAMBDA_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt }),
