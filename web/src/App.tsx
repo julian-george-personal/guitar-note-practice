@@ -62,6 +62,7 @@ export default function App() {
         </select>
       </div>
       <div id="config-portal" />
+      <div id="fretboard-portal" />
     </div>
   )
 }

@@ -109,3 +109,8 @@ function filterByScale(notes: string[], scale: string | null): string[] {
 export function openNoteForString(tuning: string[], str: number): string {
   return tuning[tuning.length - str]
 }
+
+export function openMidiForString(tuning: string[], str: number): number {
+  const idx = tuning.length - str
+  return Note.midi(tuning[idx] + (STANDARD_OCTAVES[idx] ?? 3)) ?? 0
+}

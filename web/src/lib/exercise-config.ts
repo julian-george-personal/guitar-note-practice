@@ -1,5 +1,4 @@
 import { Note, Scale } from 'tonal'
-import { CreateMLCEngine, type MLCEngine } from '@mlc-ai/web-llm'
 import { toSharp } from './audio'
 import { allStringNotes, parseFretRange, parseTuning, DEFAULT_FRET_RANGE, DEFAULT_TUNING, type StringTarget } from './string-logic'
 
@@ -48,7 +47,10 @@ export function advanceStepPattern<T>(
 }
 
 export function buildNotePool(config: ExerciseConfig, scaleIdx: number): string[] {
-  if (config.notes && config.notes.length > 0) return config.notes
+  if (config.notes && config.notes.length > 0) {
+    const valid = config.notes.filter((n): n is string => typeof n === 'string')
+    if (valid.length > 0) return valid
+  }
   const name = config.scales?.[scaleIdx]
   if (!name) return CHROMATIC_NOTES
   const notes = Scale.get(name).notes.map(toSharp)
@@ -83,34 +85,6 @@ export function buildSortedNotePool(pool: string[], order: 'ascending' | 'descen
   return order === 'ascending' ? sorted : sorted.reverse()
 }
 
-const MODEL_ID = 'Llama-3.2-3B-Instruct-q4f16_1-MLC'
-
-const SYSTEM_PROMPT = `You are a guitar practice exercise generator. Output ONLY valid JSON — no prose, no code fences.
-
-Notes use sharps (C#, not Db). String numbers: 1=high E, 2=B, 3=G, 4=D, 5=A, 6=low E (standard tuning).
-Standard string octaves: 6→E2, 5→A2, 4→D3, 3→G3, 2→B3, 1→E4.
-
-JSON schema (all fields optional except description and mode):
-{
-  "description": "one-sentence description",
-  "mode": "note" | "string",
-  "notes": ["C","E","G"],
-  "scales": ["C major"],
-  "targets": [{"string":1,"note":"E4"}],
-  "tuning": "EADGBE",
-  "fretRange": "5-8",
-  "enabledStrings": [1,2,3,4,5,6],
-  "order": "random"|"ascending"|"descending"|"sequence",
-  "stepPattern": {"forward":2,"back":1,"skip":1},
-  "scaleChangeEvery": 8
-}
-
-mode "note": pitch-class recognition on any string/octave.
-mode "string": player must find the exact note on the exact string.
-stepPattern.skip: 1=adjacent degrees (default), 2=thirds, 3=fourths.`
-
-let engine: MLCEngine | null = null
-
 function extractJSON(text: string): string {
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
   if (fenced) return fenced[1].trim()
@@ -119,26 +93,31 @@ function extractJSON(text: string): string {
   return text.trim()
 }
 
+function validateConfig(obj: unknown): ExerciseConfig {
+  if (typeof obj !== 'object' || obj === null) throw new Error('Response is not a JSON object')
+  const c = obj as Record<string, unknown>
+  if (typeof c.description !== 'string') throw new Error('Missing field: description')
+  if (c.mode !== 'note' && c.mode !== 'string') throw new Error(`Invalid mode: ${JSON.stringify(c.mode)}`)
+  return c as unknown as ExerciseConfig
+}
+
 export async function generateExerciseConfig(
   prompt: string,
   onProgress: (msg: string) => void,
 ): Promise<ExerciseConfig> {
-  if (!engine) {
-    engine = await CreateMLCEngine(MODEL_ID, {
-      initProgressCallback: ({ text }) => onProgress(text),
-    })
-  }
-
   onProgress('Generating…')
-  const resp = await engine.chat.completions.create({
-    messages: [
-      { role: 'system', content: SYSTEM_PROMPT },
-      { role: 'user', content: prompt },
-    ],
-    temperature: 0.2,
-    max_tokens: 600,
+  const res = await fetch(import.meta.env.VITE_GENERATE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
   })
-
-  const raw = resp.choices[0].message.content ?? ''
-  return JSON.parse(extractJSON(raw)) as ExerciseConfig
+  if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+  const raw = await res.text()
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(extractJSON(raw))
+  } catch {
+    throw new Error(`Invalid JSON from model: ${raw.slice(0, 200)}`)
+  }
+  return validateConfig(parsed)
 }

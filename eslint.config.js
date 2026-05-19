@@ -9,14 +9,10 @@ export default ts.config(
     plugins: { 'react-hooks': reactHooks },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      // TypeScript: allow `any` and unused vars with underscore prefix
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      // JS: no-unused-vars handled by TS rule above
       'no-unused-vars': 'off',
-      // Too strict: setState in effects is a legitimate React pattern
       'react-hooks/set-state-in-effect': 'off',
-      // Too strict: calling check() during render to avoid an extra useEffect is intentional
       'react-hooks/refs': 'off',
     },
   },

@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useLayoutEffect } from 'react'
+import { createPortal } from 'react-dom'
 import './CustomExercise.css'
 import { pitchClass, type AudioData } from '../../lib/audio'
 import { parseTuning, octaveMatch, openNoteForString, DEFAULT_TUNING } from '../../lib/string-logic'
@@ -7,6 +8,7 @@ import ExerciseFrame from '../ExerciseFrame/ExerciseFrame'
 import { storage } from '../../storage'
 import { useExerciseGenerators } from './useExerciseGenerators'
 import { useDebugMode } from '../../hooks/useDebugMode'
+import FretboardDiagram from '../../components/FretboardDiagram/FretboardDiagram'
 
 export default function CustomExercise({ audio }: { audio: AudioData }) {
   const [config, setConfig] = useState<ExerciseConfig | null>(() => storage.exerciseConfig.get())
@@ -17,6 +19,8 @@ export default function CustomExercise({ audio }: { audio: AudioData }) {
 
   const { noteGenerator, stringGenerator, displayScaleIdx } = useExerciseGenerators(config)
   const { debugOpen } = useDebugMode()
+  const [fretboardPortal, setFretboardPortal] = useState<HTMLElement | null>(null)
+  useLayoutEffect(() => { setFretboardPortal(document.getElementById('fretboard-portal')) }, [])
 
   const generate = useCallback(async () => {
     setLoading(true)
@@ -61,33 +65,41 @@ export default function CustomExercise({ audio }: { audio: AudioData }) {
     </>
   )
 
+  const mode = config?.mode ?? 'empty'
+  let frame: React.ReactNode
   if (!config) {
-    return (
-      <ExerciseFrame audio={audio} generateNextNote={() => ''} displayNote={t => t}>
+    frame = (
+      <ExerciseFrame key={mode} audio={audio} generateNextNote={() => ''} displayNote={t => t}>
+        {configUI}
+      </ExerciseFrame>
+    )
+  } else if (config.mode === 'note') {
+    frame = (
+      <ExerciseFrame key={mode} audio={audio} generateNextNote={noteGenerator} displayNote={t => t}>
+        {configUI}
+      </ExerciseFrame>
+    )
+  } else {
+    const tuning = parseTuning(config.tuning ?? DEFAULT_TUNING)
+    frame = (
+      <ExerciseFrame
+        key={mode}
+        audio={audio}
+        generateNextNote={stringGenerator}
+        displayNote={t => pitchClass(t.note)}
+        matchNote={t => t.note}
+        matchFn={octaveMatch}
+        label={t => `String ${t.string} (${openNoteForString(tuning, t.string)})`}
+      >
         {configUI}
       </ExerciseFrame>
     )
   }
 
-  if (config.mode === 'note') {
-    return (
-      <ExerciseFrame audio={audio} generateNextNote={noteGenerator} displayNote={t => t}>
-        {configUI}
-      </ExerciseFrame>
-    )
-  }
-
-  const tuning = parseTuning(config.tuning ?? DEFAULT_TUNING)
   return (
-    <ExerciseFrame
-      audio={audio}
-      generateNextNote={stringGenerator}
-      displayNote={t => pitchClass(t.note)}
-      matchNote={t => t.note}
-      matchFn={octaveMatch}
-      label={t => `String ${t.string} (${openNoteForString(tuning, t.string)})`}
-    >
-      {configUI}
-    </ExerciseFrame>
+    <>
+      {frame}
+      {debugOpen && config && fretboardPortal && createPortal(<FretboardDiagram config={config} />, fretboardPortal)}
+    </>
   )
 }
