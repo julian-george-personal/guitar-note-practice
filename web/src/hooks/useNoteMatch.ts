@@ -20,6 +20,18 @@ export function useNoteMatch(
 
   const resetTimer = () => { matchStart.current = null; lockedOctave.current = null }
 
+  const triggerSuccess = useCallback(() => {
+    if (advancing.current) return
+    advancing.current = true
+    resetTimer()
+    setCorrect(true)
+    setTimeout(() => {
+      onAdvance()
+      setCorrect(false)
+      advancing.current = false
+    }, 150)
+  }, [onAdvance])
+
   const check = useCallback(() => {
     if (!detected || advancing.current) {
       if (!detected) resetTimer()
@@ -36,14 +48,7 @@ export function useNoteMatch(
         || detectedOct >= lockedOctave.current
       if (matchStart.current && octaveOk) {
         if (performance.now() - matchStart.current > AUDIO_CONFIG.noteHoldMs) {
-          advancing.current = true
-          resetTimer()
-          setCorrect(true)
-          setTimeout(() => {
-            onAdvance()
-            setCorrect(false)
-            advancing.current = false
-          }, 300)
+          triggerSuccess()
         }
       } else {
         resetTimer()
@@ -57,5 +62,5 @@ export function useNoteMatch(
 
   const isMatch = detected != null && matchFn(detected, target)
 
-  return { correct, isMatch }
+  return { correct, isMatch, triggerSuccess }
 }

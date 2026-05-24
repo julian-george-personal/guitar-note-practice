@@ -8,9 +8,9 @@
   min-width: 2.8rem;
   height: 2.8rem;
   border-radius: 1.4rem;
-  border: 1px solid #444;
+  border: 1px solid var(--color-border);
   background: transparent;
-  color: #eee;
+  color: var(--color-text);
   font-size: 0.75rem;
   cursor: pointer;
   opacity: 0.25;
@@ -24,7 +24,7 @@
 
 .string-chip.active {
   opacity: 1;
-  border-color: #aaa;
+  border-color: var(--color-border-active);
 }
 
 .string-chip.no-toggle {

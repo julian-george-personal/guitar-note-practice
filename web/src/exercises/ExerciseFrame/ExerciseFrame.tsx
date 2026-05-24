@@ -30,15 +30,15 @@ export default function ExerciseFrame<T,>({
 
   const advance = useCallback(() => setTarget(t => generateNextNote(t)), [generateNextNote])
 
+  const noteForMatch = (matchNote ?? displayNote)(target)
+  const { correct, isMatch, triggerSuccess } = useNoteMatch(noteForMatch, audio.note, advance, matchFn)
+
   const { debugOpen } = useDebugMode()
   useEffect(() => {
     if (!debugOpen) return
-    window.addEventListener('click', advance)
-    return () => window.removeEventListener('click', advance)
-  }, [debugOpen, advance])
-
-  const noteForMatch = (matchNote ?? displayNote)(target)
-  const { correct, isMatch } = useNoteMatch(noteForMatch, audio.note, advance, matchFn)
+    window.addEventListener('click', triggerSuccess)
+    return () => window.removeEventListener('click', triggerSuccess)
+  }, [debugOpen, triggerSuccess])
 
   return (
     <div>

@@ -5,18 +5,18 @@
 }
 
 .fbd-label {
-  fill: #666;
+  fill: var(--color-fbd-label);
   font-size: 10px;
   font-family: inherit;
   text-anchor: middle;
 }
 
 .fbd-dot {
-  fill: #ddd;
+  fill: var(--color-fbd-dot);
 }
 
 .fbd-dot-text {
-  fill: #1a1a1a;
+  fill: var(--color-fbd-dot-text);
   font-size: 7.5px;
   font-family: inherit;
   text-anchor: middle;

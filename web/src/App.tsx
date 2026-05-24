@@ -40,29 +40,42 @@ export default function App() {
     setStatus(Status.Listening)
   }, [])
 
+  const header = (
+    <header id="site-header">
+      <img id="logo" src="/logo.png" alt="" />
+      <span id="title">fretboarder</span>
+    </header>
+  )
+
   if (status !== Status.Listening) {
     return (
-      <button id="start" onClick={start} disabled={status === Status.Loading}>
-        {status === Status.Loading ? <div className="spinner" /> : 'START'}
-      </button>
+      <>
+        {header}
+        <button id="start" onClick={start} disabled={status === Status.Loading}>
+          {status === Status.Loading ? <div className="spinner" /> : 'START'}
+        </button>
+      </>
     )
   }
 
   const Exercise = EXERCISES[exercise]
 
   return (
-    <div>
-      <Exercise audio={audio} />
-      <div className="input-group">
-        <label id="exercise-label">Exercise Mode</label>
-        <select id="exercise-select" value={exercise} onChange={e => setExercise(e.target.value as ExerciseKey)}>
-          <option value="note">Note</option>
-          <option value="string">String</option>
-          <option value="custom">Custom (AI)</option>
-        </select>
-      </div>
-      <div id="config-portal" />
-      <div id="fretboard-portal" />
-    </div>
+    <>
+      {header}
+      <main id="exercise-main">
+        <Exercise audio={audio} />
+        <div className="input-group">
+          <label id="exercise-label">Exercise Mode</label>
+          <select id="exercise-select" value={exercise} onChange={e => setExercise(e.target.value as ExerciseKey)}>
+            <option value="note">Note</option>
+            <option value="string">String</option>
+            <option value="custom">Custom (AI)</option>
+          </select>
+        </div>
+        <div id="config-portal" />
+        <div id="fretboard-portal" />
+      </main>
+    </>
   )
 }

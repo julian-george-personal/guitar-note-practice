@@ -3,10 +3,10 @@
   font-weight: 700;
   line-height: 1;
   user-select: none;
-  transition: color 0.2s, transform 0.2s;
+  transition: color 0.08s, transform 0.08s;
 }
 
 #note.correct {
-  color: #4ade80;
+  color: var(--color-correct);
   transform: scale(1.1);
 }

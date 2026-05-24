@@ -13,8 +13,8 @@
   font-family: inherit;
   font-size: 0.9rem;
   background: transparent;
-  color: #eee;
-  border: 1px solid #444;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
 }
 
@@ -24,8 +24,8 @@
   font-size: 0.9rem;
   font-family: inherit;
   background: transparent;
-  color: #eee;
-  border: 1px solid #444;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   cursor: pointer;
   letter-spacing: 0.05em;
