@@ -8,8 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint web/src",
-    "job:build": "esbuild job/src/index.ts --bundle --platform=node --target=node20 --format=esm --outfile=job/dist/index.mjs",
-    "job:deploy": "npm run job:build && cd job/dist && zip ../../fretboarder.zip index.mjs && cd ../.. && aws lambda update-function-code --function-name fretboarder --s3-bucket lambda-functions-juliangeorge --s3-key fretboarder.zip && rm fretboarder.zip"
+    "job:build": "esbuild job/src/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=job/dist/index.js"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.0.0",

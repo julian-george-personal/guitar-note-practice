@@ -36,7 +36,7 @@ jobs:
       - name: Build job
         run: npm run job:build
       - name: Package job
-        run: cd job/dist && zip ../../${{ env.LAMBDA_FUNCTION_NAME }}.zip index.mjs
+        run: cd job/dist && zip ../../${{ env.LAMBDA_FUNCTION_NAME }}.zip index.js
       - name: Upload job to S3
         run: aws s3 cp ${{ env.LAMBDA_FUNCTION_NAME }}.zip s3://${{ env.LAMBDA_BUCKET }}/${{ env.LAMBDA_FUNCTION_NAME }}.zip
       - name: Deploy job to Lambda
