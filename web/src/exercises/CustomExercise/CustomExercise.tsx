@@ -1,5 +1,4 @@
-import { useState, useCallback, useLayoutEffect } from 'react'
-import { createPortal } from 'react-dom'
+import { useState, useCallback } from 'react'
 import './CustomExercise.css'
 import { pitchClass, type AudioData } from '../../lib/audio'
 import { parseTuning, octaveMatch, openNoteForString, DEFAULT_TUNING } from '../../lib/string-logic'
@@ -19,8 +18,6 @@ export default function CustomExercise({ audio }: { audio: AudioData }) {
 
   const { noteGenerator, stringGenerator, displayScaleIdx } = useExerciseGenerators(config)
   const { debugOpen } = useDebugMode()
-  const [fretboardPortal, setFretboardPortal] = useState<HTMLElement | null>(null)
-  useLayoutEffect(() => { setFretboardPortal(document.getElementById('fretboard-portal')) }, [])
 
   const generate = useCallback(async () => {
     setLoading(true)
@@ -59,6 +56,7 @@ export default function CustomExercise({ audio }: { audio: AudioData }) {
       {config?.scales && config.scales.length > 1 && (
         <p className="current-scale">Scale: {config.scales[displayScaleIdx]}</p>
       )}
+      {debugOpen && config && <FretboardDiagram config={config} />}
       {debugOpen && config && (
         <pre className="config-debug">{JSON.stringify(config, null, 2)}</pre>
       )}
@@ -96,10 +94,5 @@ export default function CustomExercise({ audio }: { audio: AudioData }) {
     )
   }
 
-  return (
-    <>
-      {frame}
-      {debugOpen && config && fretboardPortal && createPortal(<FretboardDiagram config={config} />, fretboardPortal)}
-    </>
-  )
+  return frame
 }
