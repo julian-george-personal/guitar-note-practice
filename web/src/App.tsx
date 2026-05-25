@@ -35,9 +35,13 @@ export default function App() {
 
   const start = useCallback(async () => {
     setStatus(Status.Loading)
-    const { analyser } = await startListening(setAudio)
-    setAnalyser(analyser)
-    setStatus(Status.Listening)
+    try {
+      const { analyser } = await startListening(setAudio)
+      setAnalyser(analyser)
+      setStatus(Status.Listening)
+    } catch {
+      setStatus(Status.Idle)
+    }
   }, [])
 
   const header = (
