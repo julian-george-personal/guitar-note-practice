@@ -2,6 +2,7 @@
 set -e
 
 npm ci
-CAPACITOR=true npm run build
+npm run ios:build
 npx cap add ios
 npx cap sync ios
+npx @capacitor/assets generate --ios

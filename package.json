@@ -3,16 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"vite\" \"tsx test/server.ts\"",
-    "web:dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint web/src",
+    "web:dev": "concurrently \"vite\" \"tsx test/server.ts\"",
+    "ios:dev": "CAPACITOR_DEV=true npx cap sync ios && concurrently \"vite\" \"tsx test/server.ts\" \"npx cap run ios --no-sync --target-name 'iPhone 17'\"",
+    "web:build": "vite build",
     "job:build": "esbuild job/src/index.ts --bundle --platform=node --target=node20 --format=cjs --outfile=job/dist/index.js",
-    "ios:init": "npx cap add ios && npx cap sync ios",
-    "cap:build": "CAPACITOR=true npm run build && npx cap sync ios",
-    "cap:open": "npx cap open ios",
-    "cap:copy": "npx cap copy ios"
+    "ios:build": "CAPACITOR=true npm run web:build && npx cap sync ios",
+    "lint": "eslint web/src"
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.0.0",
@@ -25,6 +21,7 @@
     "tonal": "^6.4.3"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.3.4",
     "@eslint/js": "^9.39.4",
     "@types/aws-lambda": "^8.10.0",

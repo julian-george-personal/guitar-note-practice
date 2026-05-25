@@ -54,7 +54,7 @@ export default function FretboardDiagram({ config }: { config: ExerciseConfig })
   const dx = (fret: number) => ML + (fret - displayMin) * FRET_W + FRET_W / 2
 
   return (
-    <svg width={svgW} height={svgH} className="fretboard-diagram">
+    <svg width={svgW} viewBox={`0 0 ${svgW} ${svgH}`} className="fretboard-diagram">
       {/* strings */}
       {Array.from({ length: numStrings }, (_, i) => i + 1).map(s => (
         <line
