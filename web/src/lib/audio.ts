@@ -55,8 +55,9 @@ export interface AudioData {
 }
 
 export async function startListening(onData: (data: AudioData) => void): Promise<{ analyser: AnalyserNode }> {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
   const ctx = new AudioContext()
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+  if (ctx.state === 'suspended') await ctx.resume()
   const analyser = createAudioPipeline(ctx, stream)
 
   const detect = YIN({ sampleRate: ctx.sampleRate, ...AUDIO_CONFIG.yin })
