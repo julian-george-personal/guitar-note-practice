@@ -7,5 +7,5 @@ fi
 
 npm ci
 CAPACITOR=true npm run web:build
-npx cap sync ios
+npx cap copy ios
 npx @capacitor/assets generate --ios
