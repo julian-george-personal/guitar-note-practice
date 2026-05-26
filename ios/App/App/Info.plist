@@ -47,5 +47,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Fretboarder uses the microphone to detect the notes you play on guitar.</string>
 </dict>
 </plist>
