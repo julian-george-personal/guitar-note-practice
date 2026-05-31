@@ -35,3 +35,118 @@
   margin-top: 0;
   margin-bottom: 0.75rem;
 }
+
+/* Fixed bottom-right pill trigger (mobile only, rendered via JS) */
+.mobile-pill svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.mobile-pill {
+  position: fixed;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  right: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-active);
+  border-radius: 9999px;
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  z-index: 9;
+  min-height: 2.75rem;
+}
+
+/* Bottom sheet overlay */
+.config-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+/* Bottom sheet panel */
+.config-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--color-surface);
+  border-radius: 16px 16px 0 0;
+  padding: 1.25rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom));
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: sheet-up 0.22s ease-out;
+}
+
+.config-sheet.no-animate {
+  animation: none;
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.config-sheet-handle {
+  width: 2.5rem;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-border-active);
+  margin-bottom: 1rem;
+}
+
+.config-sheet-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  line-height: 1;
+}
+
+.config-sheet-label {
+  font-size: 0.85rem;
+  opacity: 0.4;
+  margin-bottom: 0.1rem;
+  letter-spacing: -0.03em;
+}
+
+.config-sheet select {
+  padding: 0.65rem 0.8rem;
+  font-size: 1rem;
+  background: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  width: 8rem;
+}
+
+.config-sheet select option {
+  background: var(--color-bg);
+}
+
+.config-sheet .input-group {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.config-sheet .exercise-mode-group > select {
+  width: min(16rem, calc(100vw - 3rem));
+}

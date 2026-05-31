@@ -15,3 +15,11 @@
   text-align: center;
   width: 8rem;
 }
+
+@media (max-width: 600px) {
+  #scale-input {
+    padding: 0.65rem 1rem;
+    font-size: 1rem;
+    width: 12rem;
+  }
+}

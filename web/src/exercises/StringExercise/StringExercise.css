@@ -46,3 +46,18 @@
 #order-select option {
   background: var(--color-bg);
 }
+
+@media (max-width: 600px) {
+  #fret-min-input,
+  #fret-max-input {
+    padding: 0.65rem 0.8rem;
+    font-size: 1rem;
+    width: 5rem;
+  }
+
+  #order-select {
+    padding: 0.65rem 0.8rem;
+    font-size: 1rem;
+    width: 12rem;
+  }
+}

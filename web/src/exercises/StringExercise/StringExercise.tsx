@@ -12,8 +12,13 @@ import { storage } from '../../storage'
 import { useDebugMode } from '../../hooks/useDebugMode'
 import FretboardDiagram from '../../components/FretboardDiagram/FretboardDiagram'
 import { type ExerciseConfig } from '../../lib/exercise-config'
+import { type ExerciseModeProps } from '../../components/ConfigSection/ConfigSection'
 
-export default function StringExercise({ audio }: { audio: AudioData }) {
+interface StringExerciseProps extends ExerciseModeProps {
+  audio: AudioData
+}
+
+export default function StringExercise({ audio, exercise, onExerciseChange }: StringExerciseProps) {
   const [scale, setScale] = useState<string | null>(() => storage.scale.get() || null)
 
   const [tuningNotes, setTuningNotes] = useState<string[]>(() =>
@@ -105,6 +110,8 @@ export default function StringExercise({ audio }: { audio: AudioData }) {
       matchNote={t => t.note}
       matchFn={octaveMatch}
       label={t => `String ${t.string} (${openNoteForString(tuningNotes, t.string)})`}
+      exercise={exercise}
+      onExerciseChange={onExerciseChange}
     >
       <div className="input-group">
         <label id="strings-label">Strings</label>

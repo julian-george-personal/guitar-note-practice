@@ -113,27 +113,4 @@ body {
     margin-top: 1rem;
   }
 
-  #scale-input,
-  #fret-min-input,
-  #fret-max-input,
-  #order-select,
-  #exercise-select {
-    font-size: 0.85rem;
-    padding: 0.3rem 0.6rem;
-  }
-
-  #scale-label,
-  #strings-label,
-  #fret-label,
-  #order-label,
-  #exercise-label {
-    font-size: 0.75rem;
-  }
-
-  .string-chip {
-    min-width: 2.2rem;
-    height: 2.2rem;
-    font-size: 0.65rem;
-    padding: 0 0.5rem;
-  }
 }

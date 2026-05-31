@@ -5,6 +5,7 @@ import { useDebugMode } from './hooks/useDebugMode'
 import NoteExercise from './exercises/NoteExercise/NoteExercise'
 import StringExercise from './exercises/StringExercise/StringExercise'
 import CustomExercise from './exercises/CustomExercise/CustomExercise'
+import { EXERCISE_OPTIONS } from './components/ConfigSection/ConfigSection'
 
 enum Status { Idle, Loading, Listening }
 
@@ -68,13 +69,11 @@ export default function App() {
     <>
       {header}
       <main id="exercise-main">
-        <Exercise audio={audio} />
+        <Exercise audio={audio} exercise={exercise} onExerciseChange={v => setExercise(v as ExerciseKey)} />
         <div className="input-group">
           <label id="exercise-label">Exercise Mode</label>
           <select id="exercise-select" value={exercise} onChange={e => setExercise(e.target.value as ExerciseKey)}>
-            <option value="note">Note</option>
-            <option value="string">String</option>
-            <option value="custom">Custom (AI)</option>
+            {EXERCISE_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
           </select>
         </div>
         <div id="config-portal" />

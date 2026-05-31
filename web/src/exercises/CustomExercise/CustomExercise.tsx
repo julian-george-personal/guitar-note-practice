@@ -8,8 +8,13 @@ import { storage } from '../../storage'
 import { useExerciseGenerators } from './useExerciseGenerators'
 import { useDebugMode } from '../../hooks/useDebugMode'
 import FretboardDiagram from '../../components/FretboardDiagram/FretboardDiagram'
+import { type ExerciseModeProps } from '../../components/ConfigSection/ConfigSection'
 
-export default function CustomExercise({ audio }: { audio: AudioData }) {
+interface CustomExerciseProps extends ExerciseModeProps {
+  audio: AudioData
+}
+
+export default function CustomExercise({ audio, exercise, onExerciseChange }: CustomExerciseProps) {
   const [config, setConfig] = useState<ExerciseConfig | null>(() => storage.exerciseConfig.get())
   const [prompt, setPrompt] = useState(() => storage.exercisePrompt.get())
   const [loading, setLoading] = useState(false)
@@ -67,13 +72,13 @@ export default function CustomExercise({ audio }: { audio: AudioData }) {
   let frame: React.ReactNode
   if (!config) {
     frame = (
-      <ExerciseFrame key={mode} audio={audio} generateNextNote={() => ''} displayNote={t => t}>
+      <ExerciseFrame key={mode} audio={audio} generateNextNote={() => ''} displayNote={t => t} exercise={exercise} onExerciseChange={onExerciseChange}>
         {configUI}
       </ExerciseFrame>
     )
   } else if (config.mode === 'note') {
     frame = (
-      <ExerciseFrame key={mode} audio={audio} generateNextNote={noteGenerator} displayNote={t => t}>
+      <ExerciseFrame key={mode} audio={audio} generateNextNote={noteGenerator} displayNote={t => t} exercise={exercise} onExerciseChange={onExerciseChange}>
         {configUI}
       </ExerciseFrame>
     )
@@ -88,6 +93,8 @@ export default function CustomExercise({ audio }: { audio: AudioData }) {
         matchNote={t => t.note}
         matchFn={octaveMatch}
         label={t => `String ${t.string} (${openNoteForString(tuning, t.string)})`}
+        exercise={exercise}
+        onExerciseChange={onExerciseChange}
       >
         {configUI}
       </ExerciseFrame>
