@@ -56,9 +56,11 @@ export default function App() {
     return (
       <>
         {header}
-        <button id="start" onClick={start} disabled={status === Status.Loading}>
-          {status === Status.Loading ? <div className="spinner" /> : 'START'}
-        </button>
+        <div id="start-screen">
+          {status === Status.Loading
+            ? <div className="spinner" />
+            : <button id="start" onClick={start}>START</button>}
+        </div>
       </>
     )
   }
