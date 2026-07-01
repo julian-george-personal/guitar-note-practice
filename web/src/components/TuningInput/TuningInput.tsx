@@ -3,7 +3,6 @@ import './TuningInput.css'
 import { Note } from 'tonal'
 import { toSharp } from '../../lib/audio'
 import { useIsMobile } from '../../hooks/useIsMobile'
-import { useClickIntent } from '../../hooks/useClickIntent'
 
 interface StringChipProps {
   openNote: string
@@ -20,8 +19,6 @@ interface StringChipProps {
 
 function StringChip({ openNote, isActive, canToggle, isEditing, editDraft, onToggle, onEdit, onDraftChange, onCommit, onCancelEdit }: StringChipProps) {
   const isMobile = useIsMobile()
-
-  const clickIntent = useClickIntent({ onClick: onToggle, onDoubleClick: onEdit })
 
   const longPressTimer = useRef<number | null>(null)
   const longPressFired = useRef(false)
@@ -65,7 +62,7 @@ function StringChip({ openNote, isActive, canToggle, isEditing, editDraft, onTog
   return (
     <div
       className={`string-chip${isActive ? ' active' : ''}${!canToggle ? ' no-toggle' : ''}`}
-      {...clickIntent}
+      onClick={onToggle}
       {...touchHandlers}
     >
       {isEditing ? (

@@ -29,7 +29,7 @@ export function useNoteMatch(
       onAdvance()
       setCorrect(false)
       advancing.current = false
-    }, 150)
+    }, AUDIO_CONFIG.noteAdvanceDelayMs)
   }, [onAdvance])
 
   const check = useCallback(() => {
